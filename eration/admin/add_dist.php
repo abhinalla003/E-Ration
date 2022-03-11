@@ -1,76 +1,85 @@
 <?php
 session_start();
-if (isset($_SESSION['user'])) {
-?>
+if(isset($_SESSION['user']))
+{
+	?>
 <?php
-  include 'config.php';
-  //This script will handle login
-  //session_start();
+    include 'config.php';
+    //This script will handle login
+    //session_start();
 
-  /* check if the user is already logged in
+    /* check if the user is already logged in
     if(isset($_SESSION['username']))
     {
        header("location: distributor.php");
        exit;
     }*/
-  include "connection.php";
-
-  if (isset($_POST['btn-add-dist'])) {
     include "connection.php";
-    $filename = $_FILES["uploadfile"]["name"];
-    $tempname = $_FILES["uploadfile"]["tmp_name"];
-    $folder = "../uploads_images/";
-    $post_password1 = md5(mysqli_real_escape_string($conn, $_POST['password']));
-    $post_password2 = md5(mysqli_real_escape_string($conn, $_POST['con_password']));
-    if ($post_password1 == $post_password2) {
-      $post_fname = $_POST['first_name'];
-      $post_mname = $_POST['middle_name'];
-      $post_lname = $_POST['last_name'];
-      $post_address = $_POST['address'];
-      $post_ph_no = $_POST['phone_no'];
-      $post_gen = $_POST['gender'];
-      $post_dob = $_POST['dob'];
-      $post_email = $_POST['email'];
-      $post_ac_no = $_POST['acard_no'];
-      $post_rc_no = $_POST['rcard_no'];
-      $post_city = $_POST['city'];
-      $post_state = $_POST['state'];
-      $post_pincode = $_POST['pincode'];
-      $post_pds_no = $_POST['pds_no'];
-      $post_email = $_POST['email'];
-      $sql = "INSERT INTO tbl_distributor (fname,mname,lname,address,contact_no,gender,dob,aadhar_no,rationcard_no,pds_no,city,state,pincode,email_id,image,password) 
+    
+    if(isset($_POST['btn-add-dist']))
+    {
+      include "connection.php";
+        $filename = $_FILES["uploadfile"]["name"];
+        $tempname = $_FILES["uploadfile"]["tmp_name"];    
+        $folder = "../uploads_images/";
+        $post_password1=md5(mysqli_real_escape_string($conn,$_POST['password']));
+        $post_password2=md5(mysqli_real_escape_string($conn,$_POST['con_password']));
+        if($post_password1 == $post_password2) {
+          $post_fname=$_POST['first_name'];
+          $post_mname=$_POST['middle_name'];
+          $post_lname=$_POST['last_name'];
+          $post_address=$_POST['address'];
+          $post_ph_no=$_POST['phone_no'];
+          $post_gen=$_POST['gender'];
+          $post_dob=$_POST['dob'];
+          $post_email=$_POST['email'];
+          $post_ac_no=$_POST['acard_no'];
+          $post_rc_no=$_POST['rcard_no'];
+          $post_city=$_POST['city'];
+          $post_state=$_POST['state'];
+          $post_pincode=$_POST['pincode'];
+          $post_pds_no=$_POST['pds_no'];
+          $post_email=$_POST['email'];
+          $sql = "INSERT INTO tbl_distributor (fname,mname,lname,address,contact_no,gender,dob,aadhar_no,rationcard_no,pds_no,city,state,pincode,email_id,image,password) 
           VALUES ('$post_fname', '$post_mname', '$post_lname', '$post_address', '$post_ph_no', '$post_gen', '$post_dob', '$post_ac_no', '$post_rc_no', 
           '$post_pds_no', '$post_city', '$post_state', '$post_pincode', '$post_email', '$filename','$post_password1')";
-
-      $sql2 = "SELECT * FROM tbl_stock";
-      $result2 = mysqli_query($conn, $sql2);
-      $stocks = mysqli_fetch_all($result2, MYSQLI_ASSOC);
-      foreach ($stocks as $stock) {
-        $stock_name = $stock['stock_name'];
-        if ($stock_name == "Wheat") {
-          $stock_quantity = 30;
-        } else {
-          $stock_quantity = 10;
-        }
-        $sql3 = "INSERT INTO tbl_pds (pds_no,stock_name,quantity)
+          
+          $sql2="SELECT * FROM tbl_stock";
+          $result2=mysqli_query($conn,$sql2);
+          $stocks=mysqli_fetch_all($result2,MYSQLI_ASSOC);
+          foreach($stocks as $stock)
+          {
+            $stock_name=$stock['stock_name'];
+            if($stock_name=="Wheat")
+            {
+              $stock_quantity=30;
+            }
+            else
+            {
+              $stock_quantity=10;
+            }
+            $sql3="INSERT INTO tbl_pds (pds_no,stock_name,quantity)
             VALUES ('$post_pds_no', '$stock_name', '$stock_quantity')";
-        mysqli_query($conn, $sql3);
-      }
-      if (mysqli_query($conn, $sql)) {
-        if (move_uploaded_file($tempname, $folder . $filename)) {
-          sleep(2);
-          echo '<script>
+            mysqli_query($conn,$sql3);
+          }
+             if (mysqli_query($conn, $sql)) 
+              {
+                if (move_uploaded_file($tempname, $folder.$filename)){
+                  sleep(2);
+                  echo '<script>
                       alert("Distributor Added Successfully...");
                       window.location.href="../admin/add_stock.php";
                       </script>';
-        } else {
-          sleep(3);
-          echo '<script>alert("Distributor Not Added...")</script>';
+                }
+                else {
+                  sleep(3);
+                  echo '<script>alert("Distributor Not Added...")</script>';
+                }
+              }
+            else 
+              echo "Error: " . $sql . "<br>" . mysqli_error($conn);
         }
-      } else
-        echo "Error: " . $sql . "<br>" . mysqli_error($conn);
-    }
-  }
+      }
   ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -78,7 +87,7 @@ if (isset($_SESSION['user'])) {
 <head>
     <meta charset="UTF-8">
     <title> Admin | E-Ration </title>
-    <link rel="stylesheet" href="style.css?v=<?= $v ?>">
+    <link rel="stylesheet" href="style.css?v=<?=$v?>">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <!-- Boxicons CDN Link -->
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
@@ -194,20 +203,20 @@ if (isset($_SESSION['user'])) {
                                 </div>
                                 <div class="w3-third w3-margin-top">
                                     <label>Phone Number</label>
-                                    <input class="w3-input w3-border w3-margin-top" name="phone_no" type="number"
-                                        placeholder="Enter Phone No." required>
+                                    <input class="w3-input w3-border w3-margin-top" name="phone_no" type="tel"
+                                        placeholder="Enter Phone No." maxlength="10" required>
                                 </div>
                             </div>
                             <div class="w3-row-padding w3-margin-top">
                                 <div class="w3-third w3-margin-top">
                                     <label>Aadharcard No.</label>
                                     <input class="w3-input w3-border w3-margin-top" name="acard_no" type="number"
-                                        placeholder="Enter Aadharcard No." required>
+                                        placeholder="Enter Aadharcard No." maxlength="12" required>
                                 </div>
                                 <div class="w3-third w3-margin-top">
                                     <label>Rationcard No.</label>
                                     <input class="w3-input w3-border w3-margin-top" name="rcard_no" type="number"
-                                        placeholder="Enter Rationcard No." required>
+                                        placeholder="Enter Rationcard No." maxlength="15" required>
                                 </div>
                                 <div class="w3-third w3-margin-top">
                                     <label>PDS No.</label>
@@ -228,13 +237,14 @@ if (isset($_SESSION['user'])) {
                                     <select class="w3-select w3-margin-top w3-border" name="city">
                                         <option value="" disabled selected>&nbsp;Select your City</option>
                                         <option value="Ahmedabad">Ahmedabad</option>
+                                        <option value="Rajkot">Rajkot</option>
                                         <option value="Surat">Surat</option>
                                     </select>
                                 </div>
                                 <div class="w3-third w3-margin-top">
                                     <label>Pincode</label>
                                     <input class="w3-input w3-border w3-margin-top" name="pincode" type="num"
-                                        placeholder="Enter Pincode" required>
+                                        placeholder="Enter Pincode" maxlength="6" required>
                                 </div>
 
                             </div>
@@ -275,10 +285,10 @@ if (isset($_SESSION['user'])) {
                                 <div class="w3-third w3-margin-top">
                                     <label>Confirm Password</label>
                                     <input class="w3-input w3-border w3-margin-top" name="con_password" type="password"
-                                        placeholder="Enter Conform Password" required>
+                                        placeholder="Enter Confirm Password" required>
                                 </div>
                                 <div class="w3-third w3-margin-top">
-                                    <label>Upload Image</label>
+                                    <label>File Upload</label>
                                     <input type="file" id="myFile" name="uploadfile">
                                 </div>
                             </div>
@@ -307,7 +317,9 @@ if (isset($_SESSION['user'])) {
 
 </html>
 <?php
-} else {
-  header("location: ../login/login.php");
+}
+else
+{
+	header("location: ../login/login.php");
 }
 ?>

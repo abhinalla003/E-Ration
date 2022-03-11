@@ -1,5 +1,6 @@
 <?php
 session_start();
+include 'config.php';
 if (isset($_SESSION['rationcard_no'])) {
   $rcard_no = $_SESSION['rationcard_no'];
   include 'connection.php';
@@ -68,9 +69,9 @@ if (isset($_SESSION['rationcard_no'])) {
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="recent_trans.php">
                     <i class='bx bx-message'></i>
-                    <span class="links_name">Recent Transections</span>
+                    <span class="links_name">Recent Transactions</span>
                 </a>
             </li>
             <li>
@@ -129,7 +130,8 @@ if (isset($_SESSION['rationcard_no'])) {
                                 <div class="w3-third w3-margin-top">
                                     <label>Email ID</label>
                                     <input class="w3-input w3-border w3-margin-top" name="email" type="email"
-                                        placeholder="<?php echo $d_email_id; ?>" value="<?php echo $d_email_id; ?>">
+                                        placeholder="<?php echo $d_email_id; ?>" value="<?php echo $d_email_id; ?>"
+                                        required>
                                 </div>
                                 <div class="w3-third w3-margin-top">
                                     <label>DOB</label>
@@ -138,8 +140,9 @@ if (isset($_SESSION['rationcard_no'])) {
                                 </div>
                                 <div class="w3-third w3-margin-top">
                                     <label>Phone Number</label>
-                                    <input class="w3-input w3-border w3-margin-top" name="phone_no" type="number"
-                                        placeholder="<?php echo $d_ph_no; ?>" value="<?php echo $d_ph_no; ?>">
+                                    <input class="w3-input w3-border w3-margin-top" name="phone_no" type="tel"
+                                        maxlength="10" placeholder="<?php echo $d_ph_no; ?>"
+                                        value="<?php echo $d_ph_no; ?>" required>
                                 </div>
                             </div>
                             <div class="w3-row-padding w3-margin-top">

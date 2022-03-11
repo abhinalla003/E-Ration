@@ -1,5 +1,6 @@
 <?php
 session_start();
+include 'config.php';
 if (isset($_SESSION['rationcard_no'])) {
   $rcard_no = $_SESSION['rationcard_no'];
   include 'connection.php';
@@ -86,9 +87,9 @@ if (isset($_SESSION['rationcard_no'])) {
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="recent_trans.php">
                     <i class='bx bx-message'></i>
-                    <span class="links_name">Recent Transections</span>
+                    <span class="links_name">Recent Transactions</span>
                 </a>
             </li>
             <li>

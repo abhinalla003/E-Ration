@@ -237,7 +237,7 @@ if (isset($_SESSION['user'])) {
                                             <?php echo $b; ?>
                                         </td>
                                         <td scope="row"><input class="w3-input" type="text" name="quantity"
-                                                placeholder="Enter Quantity Per User in KG">
+                                                placeholder="Enter Quantity Per User in KG" required>
                                         </td>
                                         <td scope="row"><button class="w3-button w3-round-large w3-dark-blue"
                                                 type="submit" name="add_stock">Add</button></td>

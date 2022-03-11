@@ -2,25 +2,24 @@
 session_start();
 include 'config.php';
 if (isset($_SESSION['rationcard_no'])) {
-    $rcard_no = $_SESSION['rationcard_no'];
-    include 'connection.php';
-    $sql = "SELECT * FROM tbl_distributor WHERE rationcard_no='$rcard_no'";
-    $result = mysqli_query($conn, $sql);
-    $distributors = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    foreach ($distributors as $distributor) {
-        $d_pincode = $distributor['pincode'];
-        $d_fname = $distributor['fname'];
-        $d_lname = $distributor['lname'];
-        $d_image = $distributor['image'];
-        $d_pds = $distributor['pds_no'];
-    }
+  $rcard_no = $_SESSION['rationcard_no'];
+  include 'connection.php';
+  $sql = "SELECT * FROM tbl_distributor WHERE rationcard_no='$rcard_no'";
+  $result = mysqli_query($conn, $sql);
+  $distributors = mysqli_fetch_assoc($result);
+  $pds=$distributors['pds_no'];
+  $d_pincode = $distributors['pincode'];
+        $d_fname = $distributors['fname'];
+        $d_lname = $distributors['lname'];
+        $d_image = $distributors['image'];
+        $d_pds = $distributors['pds_no'];
 
-    $sql1 = "SELECT * FROM tbl_user WHERE pincode='$d_pincode'";
-    $result2 = mysqli_query($conn, $sql1);
-    $d_customers = mysqli_fetch_all($result2, MYSQLI_ASSOC);
-    $count = mysqli_num_rows($result2);
-    $n = 1;
-?>
+  $sql1="SELECT * FROM tbl_dist_receipt WHERE d_pds='$pds'";
+  $result1=mysqli_query($conn,$sql1);
+  $dist_rec=mysqli_fetch_all($result1,MYSQLI_ASSOC);
+  $count=mysqli_num_rows($result1);
+    $n=1;
+  ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 
@@ -31,7 +30,6 @@ if (isset($_SESSION['rationcard_no'])) {
     <!-- Boxicons CDN Link -->
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-metro.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
     #customers {
@@ -108,13 +106,13 @@ if (isset($_SESSION['rationcard_no'])) {
                 </a>
             </li>
             <li>
-                <a href="customer.php" class="active">
+                <a href="customer.php">
                     <i class='bx bx-user'></i>
                     <span class="links_name">Customers</span>
                 </a>
             </li>
             <li>
-                <a href="recent_trans.php">
+                <a href="#" class="active">
                     <i class='bx bx-message'></i>
                     <span class="links_name">Recent Transactions</span>
                 </a>
@@ -137,7 +135,7 @@ if (isset($_SESSION['rationcard_no'])) {
         <nav>
             <div class="sidebar-button">
                 <i class='bx bx-menu sidebarBtn'></i>
-                <span class="dashboard">Customers</span>
+                <span class="dashboard">Recent Transactions</span>
             </div>
             <div class="profile-details">
                 <img src="<?php echo "../uploads_images/" . $d_image; ?>" alt="Error">
@@ -145,57 +143,44 @@ if (isset($_SESSION['rationcard_no'])) {
                 <i class='bx bx-chevron-down'></i>
             </div>
         </nav>
-        <div class="home-content w3-responsive" style="margin-left: 2rem;margin-right:2rem">
-            <table id="customers" class="w3-table-all">
-                <thead>
-                    <tr>
-                        <th>SR No</th>
-                        <th>Name</th>
-                        <th>Ration Card No</th>
-                        <th>Aadhar Card No</th>
-                        <th>DOB</th>
-                        <th>Email-id</th>
-                        <th>Phone No</th>
-                        <th>Pincode</th>
-                        <th>Address</th>
-                        <th></th>
-                    </tr>
-                    <?php
+
+        <div class="home-content">
+            <div class="add-distributor">
+                <div class="form_wrapper">
+                    <div class="form_container">
+                        <table id="customers" class="w3-table-all">
+                            <thead>
+                                <tr>
+                                    <th>SR No</th>
+                                    <th>Date</th>
+                                    <th>Name</th>
+                                    <th>Ration Card No</th>
+                                    <th>Amount</th>
+                                </tr>
+                                <?php
                         if ($count > 0) {
-                            foreach ($d_customers as $d_customer) {
+                            foreach ($dist_rec as $rec) {
+                                $c_name=$rec['rationcard_no'];
+                                $sql2="SELECT * FROM tbl_user WHERE rationcard_no='$c_name'";
+                                $result2=mysqli_query($conn,$sql2);
+                                $rows=mysqli_fetch_assoc($result2);
+                                $name=$rows['fname']." ". $rows['mname']." ". $rows['lname'];
                         ?>
-                    <tr>
-                        <td data-label="SR No"><?php echo $n; ?></td>
-                        <td data-label="Name">
-                            <?php echo $d_customer['fname'] . " " . $d_customer['mname'] . " " . $d_customer['lname']; ?>
-                        </td>
-                        <td data-label="Ration Card No"><?php echo $d_customer['rationcard_no']; ?></td>
-                        <td data-label="Aadhar Card No"><?php echo $d_customer['aadhar_no']; ?></td>
-                        <td data-label="DOB"><?php echo $d_customer['dob']; ?></td>
-                        <td data-label="Email-id"><?php echo $d_customer['email_id']; ?></td>
-                        <td data-label="Phone No"><?php echo $d_customer['contact_no']; ?></td>
-                        <td data-label="Pincode"><?php echo $d_customer['pincode']; ?></td>
-                        <td data-label="Address"><?php echo $d_customer['address']; ?></td>
-                        <td data-label="">
-                            <input type="radio"
-                                onClick="Javascript:window.location.href = 'list_customer.php?c_rc=<?php echo $d_customer['rationcard_no']; ?>';"
-                                name="list_customer" />
-                        </td>
-                    </tr>
-                    <?php
+                                <tr>
+                                    <td data-label="SR No"><?php echo $n; ?></td>
+                                    <td data-label="Date"><?php echo $rec['date']; ?></td>
+                                    <td data-label="Name"><?php echo $name; ?></td>
+                                    <td data-label="Ration Card No"><?php echo $rec['rationcard_no']; ?></td>
+                                    <td data-label="Date"><?php echo $rec['amount']; ?></td>
+                                </tr>
+                                <?php
                                 $n = $n + 1;
                             }
-                        } else {
-                            ?><script>
-                    alert("Currently, there is no customer under this <?php echo $d_pds; ?> PDS");
-                    window.location.href = "dist_dash.php";
-                    </script><?php
-                                    }
-                                        ?>
-            </table>
-            <div class="w3-center w3-margin">
-                <a href="print_customers.php?pincode=<?php echo $d_pincode; ?>" target="_blank"
-                    class="w3-button w3-round-large w3-dark-blue" name="btnprint">Print</a>
+                        }
+                        ?>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -215,9 +200,7 @@ if (isset($_SESSION['rationcard_no'])) {
 
 </html>
 <?php
-}
-else
-{
-	header("location: ../login/login.php");
+} else {
+  header("location: ../login/login.php");
 }
 ?>

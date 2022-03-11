@@ -1,8 +1,10 @@
 <?php
 session_start();
+include 'config.php';
 if (isset($_SESSION['rationcard_no'])) {
-    include 'config.php';
+    
     $rcard_no = $_SESSION['rationcard_no'];
+    $t_date = $_SESSION['t_date'];
     include 'connection.php';
     $n = 1;
     $total_amount = 0;
@@ -10,15 +12,20 @@ if (isset($_SESSION['rationcard_no'])) {
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_fetch_assoc($result);
     $u_id = $rows['u_id'];
-    $fname = $rows['fname'];
-    $mname = $rows['mname'];
-    $lname = $rows['lname'];
+    $name = $rows['fname'] . " " . $rows['mname'] . " " . $rows['lname'];
     $ph_no = $rows['contact_no'];
     $mail = $rows['email_id'];
     $sql1 = "SELECT * FROM tbl_user_stock WHERE u_id='$u_id'
     ORDER BY stock_id";
     $result1 = mysqli_query($conn, $sql1);
     $rows = mysqli_fetch_all($result1, MYSQLI_ASSOC);
+
+    $sql2="SELECT given_date FROM tbl_book WHERE rationcard_no='$rcard_no' ORDER BY given_date DESC";
+    $result2=mysqli_query($conn,$sql2);
+    $checking=mysqli_fetch_assoc($result2);
+
+    date_default_timezone_set("Asia/Kolkata");
+    $date=date("Y-m-d");
 ?>
 <!DOCTYPE html>
 <!-- Coding by CodingLab | www.codinglabweb.com -->
@@ -33,10 +40,11 @@ if (isset($_SESSION['rationcard_no'])) {
     <link rel="stylesheet" href="style.css?v=<?= $v ?>">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-metro.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!----===== Boxicons CSS ===== -->
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
 
-    <title>Book Ration</title>
+    <title>Customer | E-Ration</title>
 </head>
 
 <body>
@@ -82,28 +90,14 @@ if (isset($_SESSION['rationcard_no'])) {
                     <li class="nav-link">
                         <a href="history.php">
                             <i class='bx bx-bell icon'></i>
-                            <span class="text nav-text">Transections</span>
+                            <span class="text nav-text">Transactions</span>
                         </a>
                     </li>
 
                     <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-pie-chart-alt icon'></i>
-                            <span class="text nav-text">Other Services</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="#">
+                        <a href="edit_profile.php">
                             <i class='bx bx-heart icon'></i>
                             <span class="text nav-text">My Profile</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-wallet icon'></i>
-                            <span class="text nav-text">Wallets</span>
                         </a>
                     </li>
                 </ul>
@@ -137,13 +131,47 @@ if (isset($_SESSION['rationcard_no'])) {
     <section class="home">
         <div class="top">
             <div class="head">
-                <i class='bx bx-bar-chart-alt-2 icon sidebarBtn'></i>
+                <i class='bx bx-home sidebarBtn'></i>
                 <span class="dashboard">Book Ration</span>
             </div>
-            <div class="profile-details">
-                <img src="l2.png" alt="">
-                <span class="admin_name"><?php echo $fname . " " . $mname . " " . $lname; ?></span>
-                <i class='bx bx-chevron-down'></i>
+
+            <div class="profile-details w3-hide-small">
+                <div class="w3-round-large w3-border" style="padding:2px">
+                    <img src="l2.png" alt="">
+                    <span class="admin_name"><?php echo $name; ?></span>
+                    <div class="w3-dropdown-hover w3-hover-none">
+                        <button class="w3-button"><i class="fa fa-caret-down"></i></button>
+                        <div class="w3-dropdown-content w3-bar-block w3-border">
+                            <a href="edit_profile.php" class="w3-bar-item w3-button">Edit Profile</a>
+                            <a href="logout.php" class="w3-bar-item w3-button">Log Out</a>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="window.location.href='mycart.php'" type="submit"
+                    class="w3-card w3-padding w3-round-large w3-dark-blue w3-margin-left">
+
+                    <div class="cart">
+                        <label style="font-size:16px;margin-right:2px;margin-left:5px;color:#fff;">Cart :
+                            <?php
+                                if (isset($_SESSION['cart'])) {
+                                    $count = count($_SESSION['cart']);
+                                    if($count>1)
+                                    {
+                                        echo "<span><b>$count Items</b></span>";
+                                        $_SESSION['count'] = $count;
+                                    }
+                                    else
+                                    {
+                                        echo "<span><b>$count Item</b></span>";
+                                        $_SESSION['count'] = $count;
+                                    }
+                                } else {
+                                    $_SESSION['count'] = 0;
+                                    echo "<span>0 Item</span>";
+                                }
+                                ?>
+                        </label>
+                </button>
             </div>
         </div>
         <div class="welcome-banner w3-container w3-margin-left">
@@ -152,9 +180,13 @@ if (isset($_SESSION['rationcard_no'])) {
                     <b>Booking Details</b>
                 </h2>
             </ul>
+            <?php
+            if($date==$t_date)
+            { 
+            ?>
             <div class="book">
                 <ul class="w3-ul w3-margin-top w3-card-4 w3-round-large w3-padding">
-                    <h4><b>Name : </b><?php echo $fname . " " . $mname . " " . $lname; ?></h4>
+                    <h4><b>Name : </b><?php echo $name; ?></h4>
                     <h4 class="w3-margin-top"><b>Phone No : </b><?php echo $ph_no; ?></h4>
                     <h4 class="w3-margin-top"><b>Ration Card No : </b><?php echo $rcard_no; ?></h4>
                     <h4 class="w3-margin-top"><b>Ration Card No : </b><?php echo $mail; ?></h4>
@@ -223,9 +255,9 @@ if (isset($_SESSION['rationcard_no'])) {
                     <form class="modal-content" action="/action_page.php">
                         <div class="container">
                             <h1 class="w3-orange w3-round-large w3-padding">Conform Your Bookings</h1>
-                            <h3>Select Your Payment Mode by Clicking on Button</h3>
-                            <p>You can pay for your bookings in 2 ways...</p>
-                            <h3><b>Please Choose Your Corresponding Option .....</b></h3>
+                            <h3>Select Your Payment Mode</h3>
+                            <p>You can pay in 2 ways...</p>
+                            <h3><b>Please Choose Your Option .....</b></h3>
                             <div class="clearfix w3-center">
                                 <button type="button" onclick="document.getElementById('id01').style.display='none'"
                                     class="w3-button w3-hover-orange w3-ripple w3-dark-blue w3-margin-top w3-round-large w3-padding-16 w3-margin-left"><a
@@ -239,6 +271,28 @@ if (isset($_SESSION['rationcard_no'])) {
                     </form>
                 </div>
             </div>
+            <?php
+            }
+            else
+            {
+                ?>
+            <div class="book">
+                <ul class="w3-ul w3-margin-top w3-card-4 w3-round-large w3-padding">
+                    <h4><b>Name : </b><?php echo $name; ?></h4>
+                    <h4 class="w3-margin-top">Ration has been taken on <b><?php echo $checking['given_date']; ?></b>
+                    </h4>
+                    <h4 class="w3-margin-top"><b>Please wait for email then you can book you Ration</h4>
+                    <h4 class="w3-margin-top"><b>Thanks For Visiting</b></h4>
+                    <button
+                        class="w3-button w3-hover-orange w3-ripple w3-dark-blue w3-margin-top w3-round-large w3-padding-16"
+                        name="btnhome"><a href="customer.php"
+                            style="text-decoration: none;cursor: default;">Home</a></button>
+                    <h3 class="w3-padding"></h3>
+                </ul>
+            </div>
+            <?php
+            }
+            ?>
         </div>
 
     </section>

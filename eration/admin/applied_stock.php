@@ -1,16 +1,17 @@
 <?php
 session_start();
-if (isset($_SESSION['user'])) {
-?>
+if(isset($_SESSION['user']))
+{
+	?>
 <?php
-  include 'config.php';
-  include('connection.php');
-  $sql2 = "SELECT tbl_apply_stock.ap_id ,tbl_apply_stock.date ,tbl_stock.stock_id ,tbl_stock.stock_name, tbl_distributor.fname,
+      include 'config.php';
+      include ('connection.php');
+      $sql2="SELECT tbl_apply_stock.ap_id ,tbl_apply_stock.date ,tbl_stock.stock_id ,tbl_stock.stock_name, tbl_distributor.fname,
       tbl_distributor.pds_no FROM tbl_stock, tbl_distributor, tbl_apply_stock 
       WHERE tbl_apply_stock.pds_no=tbl_distributor.pds_no AND tbl_apply_stock.stock_id=tbl_stock.stock_id 
       ORDER BY tbl_apply_stock.ap_id";
-  $result3 = mysqli_query($conn, $sql2);
-  $rows = mysqli_fetch_all($result3, MYSQLI_ASSOC);
+      $result3=mysqli_query($conn,$sql2);
+      $rows=mysqli_fetch_all($result3,MYSQLI_ASSOC);
   ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -18,9 +19,10 @@ if (isset($_SESSION['user'])) {
 <head>
     <meta charset="UTF-8">
     <title> Admin | E-Ration </title>
-    <link rel="stylesheet" href="style.css?v=<?= $v ?>">
+    <link rel="stylesheet" href="style.css?v=<?=$v?>">
     <!-- Boxicons CDN Link -->
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
     table,
@@ -126,7 +128,8 @@ if (isset($_SESSION['user'])) {
                                 </thead>
                                 <tbody>
                                     <?php
-                    foreach ($rows as $row) {
+                      foreach($rows as $row)
+                      {
                     ?>
                                     <tr>
                                         <td data-label="Applied Id"><?php echo $row['ap_id']; ?></td>
@@ -137,10 +140,11 @@ if (isset($_SESSION['user'])) {
                                         <td data-label="PDS No."><?php echo $row['pds_no']; ?></td>
                                         <td data-label=""><a
                                                 href="print_applied_stock.php?sr_id=<?php echo $row['ap_id']; ?>"
-                                                class="btn" name="btnprint">Print</a></td>
+                                                class="w3-round-large w3-dark-blue w3-button" name="btnprint">Print</a>
+                                        </td>
                                     </tr>
                                     <?php
-                    }
+                      }
                     ?>
                                     <tr>
 
@@ -168,7 +172,9 @@ if (isset($_SESSION['user'])) {
 
 </html>
 <?php
-} else {
-  header("location: ../login/login.php");
+}
+else
+{
+	header("location: ../login/login.php");
 }
 ?>

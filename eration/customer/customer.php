@@ -1,6 +1,8 @@
 <?php
 session_start();
 if (isset($_SESSION['rationcard_no'])) {
+    date_default_timezone_set("Asia/Kolkata");    
+    $date=date("Y-m-d");
     include 'config.php';
     $rcard_no = $_SESSION['rationcard_no'];
     include 'connection.php';
@@ -8,19 +10,60 @@ if (isset($_SESSION['rationcard_no'])) {
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_fetch_assoc($result);
     $name = $rows['fname'] . " " . $rows['mname'] . " " . $rows['lname'];
-    $cnt = $rows['cart'];
+    $mail=$rows['email_id'];
+    $image=$rows['image'];
     $sql2 = "SELECT * FROM `tbl_stock`";
-    $result3 = mysqli_query($conn, $sql2);
-    $rows = mysqli_fetch_all($result3, MYSQLI_ASSOC);
-    foreach ($customers as $customer) {
-        $d_pincode = $customer['pincode'];
-        $d_fname = $customer['fname'];
-        $d_lname = $distributor['lname'];
-        $d_image = $distributor['image'];
+    $result2 = mysqli_query($conn, $sql2);
+    $rows = mysqli_fetch_all($result2, MYSQLI_ASSOC);
+
+    $sql3="SELECT given_date FROM tbl_book WHERE rationcard_no='$rcard_no' ORDER BY given_date DESC";
+    $result3=mysqli_query($conn,$sql3);
+    $fetch=mysqli_fetch_assoc($result3);
+    $r_date=$fetch['given_date'];
+    $Date=$r_date;
+    $t_date = date('Y-m-d', strtotime($Date. ' + 30 days'));
+    $_SESSION['t_date']=$t_date;
+    if(isset($r_date))
+    {
+        $sql4="SELECT * FROM tbl_book WHERE rationcard_no='$rcard_no' ORDER BY given_date DESC";
+        $result4=mysqli_query($conn,$sql4);
+        $ser_mail=mysqli_fetch_assoc($result4);
+        $check=$ser_mail['status_for_mail'];
+        $b_id=$ser_mail['booking_id'];
+        if($check==0)
+        {
+            if($date==$t_date)
+            {
+                $to = $mail;
+                $subject = "Ration Assigned";
+                $message = "<b><h1>E-Ration Team.</h1></b>";
+                $message .= "<h4>Your ration is now available.</h4>";
+                $message .= "<h4>Book your raion now,<a href='http://localhost/eration1/eration/customer/customer.php'>Click Here</a></h4>";
+                    
+                $header = "From:nallaabhi2003@gmail.com \r\n";
+                $header .= "MIME-Version: 1.0\r\n";
+                $header .= "Content-type: text/html\r\n";
+                    
+                $retval = mail ($to,$subject,$message,$header);
+                if($retval)
+                {
+                    $sql5="UPDATE tbl_book SET status_for_mail='1' WHERE booking_id='$b_id'";
+                    $update=mysqli_query($conn,$sql5);
+                }
+                else
+                {
+                    echo '<script>alert("No sent mail")</script>';
+                }
+            }
+        }
     }
+    else
+    {
+        $_SESSION['t_date']=$date;
+    }
+    
     if (isset($_POST['add'])) {
 
-        print_r($_POST['product_id']);
         if (isset($_SESSION['cart'])) {
 
             $item_array_id = array_column($_SESSION['cart'], "product_id");
@@ -65,7 +108,7 @@ if (isset($_SESSION['rationcard_no'])) {
     .card {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
         background-color: black;
-        max-width: 300px;
+        max-width: 250px;
         margin: auto;
         text-align: center;
         font-family: arial;
@@ -146,7 +189,7 @@ if (isset($_SESSION['rationcard_no'])) {
                     </li>
 
                     <li class="nav-link">
-                        <a href="bookration.php">
+                        <a href="mycart.php">
                             <i class='bx bx-bar-chart-alt-2 icon'></i>
                             <span class="text nav-text">Book Ration</span>
                         </a>
@@ -155,28 +198,14 @@ if (isset($_SESSION['rationcard_no'])) {
                     <li class="nav-link">
                         <a href="history.php">
                             <i class='bx bx-bell icon'></i>
-                            <span class="text nav-text">Transections</span>
+                            <span class="text nav-text">Transactions</span>
                         </a>
                     </li>
 
                     <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-pie-chart-alt icon'></i>
-                            <span class="text nav-text">Other Services</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="#">
+                        <a href="edit_profile.php">
                             <i class='bx bx-heart icon'></i>
                             <span class="text nav-text">My Profile</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-wallet icon'></i>
-                            <span class="text nav-text">Wallets</span>
                         </a>
                     </li>
                 </ul>
@@ -221,13 +250,12 @@ if (isset($_SESSION['rationcard_no'])) {
                     <div class="w3-dropdown-hover w3-hover-none">
                         <button class="w3-button"><i class="fa fa-caret-down"></i></button>
                         <div class="w3-dropdown-content w3-bar-block w3-border">
-                            <a href="#" class="w3-bar-item w3-button">View History</a>
-                            <a href="#" class="w3-bar-item w3-button">Edit Profile</a>
+                            <a href="edit_profile.php" class="w3-bar-item w3-button">Edit Profile</a>
                             <a href="logout.php" class="w3-bar-item w3-button">Log Out</a>
                         </div>
                     </div>
                 </div>
-                <button onclick="window.location.href='cart.php'" type="submit"
+                <button onclick="window.location.href='mycart.php'" type="submit"
                     class="w3-card w3-padding w3-round-large w3-dark-blue w3-margin-left">
 
                     <div class="cart">
@@ -235,11 +263,19 @@ if (isset($_SESSION['rationcard_no'])) {
                             <?php
                                 if (isset($_SESSION['cart'])) {
                                     $count = count($_SESSION['cart']);
-                                    echo "<span><b>$count Items</b></span>";
-                                    $_SESSION['count'] = $count;
+                                    if($count>1)
+                                    {
+                                        echo "<span><b>$count Items</b></span>";
+                                        $_SESSION['count'] = $count;
+                                    }
+                                    else
+                                    {
+                                        echo "<span><b>$count Item</b></span>";
+                                        $_SESSION['count'] = $count;
+                                    }
                                 } else {
                                     $_SESSION['count'] = 0;
-                                    echo "<span>0 Items</span>";
+                                    echo "<span>0 Item</span>";
                                 }
                                 ?>
                         </label>
@@ -252,38 +288,109 @@ if (isset($_SESSION['rationcard_no'])) {
         <div class="welcome-banner w3-container w3-margin-left">
             <ul class="w3-ul w3-dark-blue w3-card-4 w3-round-large">
                 <li class="w3-bar">
-                    <img src="user-logo.png" class="w3-bar-item w3-circle w3-hide-small" style="width:85px">
+                    <img src="<?php echo "../uploads_images/" . $image; ?>" alt="Error"
+                        class="w3-bar-item w3-circle w3-hide-small" style="width:85px">
                     <div class="w3-bar-item">
-                        <span class="w3-large">Hello <?php echo $name; ?>,</span><br>
+                        <span class="w3-large">Hello
+                            <?php echo $name; ?>,</span><br>
                         <span>Welcome to the E-Ration...</span>
                     </div>
                 </li>
         </div>
+        <?php
+        if(isset($r_date))
+        {
+            if($date==$t_date)
+            {
+            ?>
         <div class="w3-container w3-margin-top w3-margin-right w3-round-large w3-padding" style="margin-left:2.2rem">
-            <h2><b><?php echo $product; ?>Book Your Ration</b></h2>
+            <h2><b>Book Your Ration</b></h2>
             <div class="scrollmenu">
                 <tr>
                     <th>
                         <?php
-                            $n = 1;
-                            foreach ($rows as $row) {
-                            ?><form method="post" action="">
-                            <div class="card w3-margin w3-round-large">
-                                <img src="<?php echo "../uploads_images/" . $row['img']; ?>" alt="Wheat"
-                                    style="width:100%">
+                                $n = 1;
+                                foreach ($rows as $row) {
+                                ?>
+                        <form method="post" action="">
+                            <div class="card w3-margin-top w3-round-large">
+                                <img class="w3-margin-top" src="<?php echo "../uploads_images/" . $row['img']; ?>"
+                                    alt="Wheat" style="width:70%">
                                 <h1><?php echo $row['stock_name']; ?></h1>
-                                <p class="price"><?php echo $row['stock_price']; ?> Rupees</p>
+                                <?php
+                                    if($row['stock_name']!="Oil")
+                                    {
+                                    ?>
+                                <p class="price"><?php echo "₹ ".$row['stock_price']; ?>/KG</p>
+                                <?php
+                                    }
+                                    else
+                                    {?>
+                                <p class="price"><?php echo "₹ ".$row['stock_price']; ?>/Litres</p>
+                                <?php
+                                    }
+                                    ?>
                                 <p><button class="w3-dark-blue w3-margin-top w3-round" type="submit" name="add">Add to
                                         Cart</button></p>
                                 <input type="hidden" name="product_id" value="<?php echo $row['stock_id']; ?>">
                             </div>
                         </form>
                         <?php
-                                $n = $n + 1;
-                            }
-                            ?>
+                                    $n = $n + 1;
+                                }
+                                ?>
             </div>
         </div>
+        <?php
+            }
+            else
+            {
+                echo "<h3 style='margin-left:100px;'>No Ration is available now.</h3>";
+            }
+        }
+        else
+        {?>
+        <div class="w3-container w3-margin-top w3-margin-right w3-round-large w3-padding" style="margin-left:2.2rem">
+            <h2><b>Book Your Ration</b></h2>
+            <div class="scrollmenu">
+                <tr>
+                    <th>
+                        <?php
+                                $n = 1;
+                                foreach ($rows as $row) {
+                                ?>
+                        <form method="post" action="">
+                            <div class="card w3-margin-top w3-round-large">
+                                <img class="w3-margin-top" src="<?php echo "../uploads_images/" . $row['img']; ?>"
+                                    alt="Wheat" style="width:70%">
+                                <h1><?php echo $row['stock_name']; ?></h1>
+                                <?php
+                                    if($row['stock_name']!="Oil")
+                                    {
+                                    ?>
+                                <p class="price"><?php echo "₹ ".$row['stock_price']; ?>/KG</p>
+                                <?php
+                                    }
+                                    else
+                                    {?>
+                                <p class="price"><?php echo "₹ ".$row['stock_price']; ?>/Litres</p>
+                                <?php
+                                    }
+                                    ?>
+                                <p><button class="w3-dark-blue w3-margin-top w3-round" type="submit" name="add">Add to
+                                        Cart</button></p>
+                                <input type="hidden" name="product_id" value="<?php echo $row['stock_id']; ?>">
+                            </div>
+                        </form>
+                        <?php
+                                    $n = $n + 1;
+                                }
+                                ?>
+            </div>
+        </div>
+        <?php
+        }
+        ?>
     </section>
 
     <script>

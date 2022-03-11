@@ -2,30 +2,35 @@
     session_start();
     if(isset($_SESSION['rationcard_no']))
     {
-    include 'config.php'; 
-    $rcard_no=$_SESSION['rationcard_no'];
-    include 'connection.php';
-    $sql="SELECT * FROM tbl_user WHERE rationcard_no='$rcard_no'";
-    $result=mysqli_query($conn,$sql);
-    $rows=mysqli_fetch_assoc($result);
+        include 'config.php'; 
+        $rcard_no=$_SESSION['rationcard_no'];
+        include 'connection.php';
+        $sql = "SELECT * FROM tbl_user WHERE rationcard_no='$rcard_no'";
+        $result = mysqli_query($conn, $sql);
+        $rows = mysqli_fetch_assoc($result);
+        $name = $rows['fname'] . " " . $rows['mname'] . " " . $rows['lname'];
+        $image=$rows['image'];
 ?>
 <!DOCTYPE html>
-  <!-- Coding by CodingLab | www.codinglabweb.com -->
+<!-- Coding by CodingLab | www.codinglabweb.com -->
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!----======== CSS ======== -->
     <link rel="stylesheet" href="style.css?v=<?=$v?>">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-metro.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!----===== Boxicons CSS ===== -->
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
-    
-    <title>Dashboard Sidebar Menu</title> 
+
+    <title>Customer | E-Ration</title>
 </head>
+
 <body>
     <nav class="sidebar close">
         <header>
@@ -54,14 +59,14 @@
                 <ul class="menu-links">
                     <li class="nav-link">
                         <a href="customer.php">
-                            <i class='bx bx-home-alt icon' ></i>
+                            <i class='bx bx-home-alt icon'></i>
                             <span class="text nav-text">Dashboard</span>
                         </a>
                     </li>
 
                     <li class="nav-link">
-                        <a href="bookration.php">
-                            <i class='bx bx-bar-chart-alt-2 icon' ></i>
+                        <a href="mycart.php">
+                            <i class='bx bx-bar-chart-alt-2 icon'></i>
                             <span class="text nav-text">Book Ration</span>
                         </a>
                     </li>
@@ -69,28 +74,14 @@
                     <li class="nav-link">
                         <a href="#">
                             <i class='bx bx-bell icon'></i>
-                            <span class="text nav-text">Transections</span>
+                            <span class="text nav-text">Transactions</span>
                         </a>
                     </li>
 
                     <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-pie-chart-alt icon' ></i>
-                            <span class="text nav-text">Other Services</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-heart icon' ></i>
+                        <a href="edit_profile.php">
+                            <i class='bx bx-heart icon'></i>
                             <span class="text nav-text">My Profile</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-wallet icon' ></i>
-                            <span class="text nav-text">Wallets</span>
                         </a>
                     </li>
                 </ul>
@@ -99,7 +90,7 @@
             <div class="bottom-content">
                 <li class="">
                     <a href="logout.php">
-                        <i class='bx bx-log-out icon' ></i>
+                        <i class='bx bx-log-out icon'></i>
                         <span class="text nav-text">Logout</span>
                     </a>
                 </li>
@@ -115,7 +106,7 @@
                         <span class="switch"></span>
                     </div>
                 </li>
-                
+
             </div>
         </div>
 
@@ -125,118 +116,143 @@
         <div class="top">
             <div class="head">
                 <i class='bx bx-home sidebarBtn'></i>
-                <span class="dashboard">Dashboard</span>
+                <span class="dashboard">Transactions</span>
             </div>
-            <div class="profile-details">
-                <img src="l2.png" alt="">
-                <span class="admin_name"><?php echo $rows['fname']." ". $rows['mname']." ". $rows['lname']; ?></span>
-                <i class='bx bx-chevron-down' ></i>
+            <div class="profile-details w3-hide-small">
+                <div class="w3-round-large w3-border" style="padding:2px">
+                    <img src="l2.png" alt="">
+                    <span class="admin_name"><?php echo $name; ?></span>
+                    <div class="w3-dropdown-hover w3-hover-none">
+                        <button class="w3-button"><i class="fa fa-caret-down"></i></button>
+                        <div class="w3-dropdown-content w3-bar-block w3-border">
+                            <a href="edit_profile.php" class="w3-bar-item w3-button">Edit Profile</a>
+                            <a href="logout.php" class="w3-bar-item w3-button">Log Out</a>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="window.location.href='mycart.php'" type="submit"
+                    class="w3-card w3-padding w3-round-large w3-dark-blue w3-margin-left">
+
+                    <div class="cart">
+                        <label style="font-size:16px;margin-right:2px;margin-left:5px;color:#fff;">Cart :
+                            <?php
+                                if (isset($_SESSION['cart'])) {
+                                    $count = count($_SESSION['cart']);
+                                    if($count>1)
+                                    {
+                                        echo "<span><b>$count Items</b></span>";
+                                        $_SESSION['count'] = $count;
+                                    }
+                                    else
+                                    {
+                                        echo "<span><b>$count Item</b></span>";
+                                        $_SESSION['count'] = $count;
+                                    }
+                                } else {
+                                    $_SESSION['count'] = 0;
+                                    echo "<span>0 Item</span>";
+                                }
+                                ?>
+                        </label>
+                </button>
             </div>
         </div>
         <div class="welcome-banner  w3-container w3-margin-left">
-        <ul class="w3-ul w3-card-4 w3-dark-blue w3-round-large">
-            <li class="w3-bar">
-            <img src="user-logo.png" class="w3-bar-item w3-circle w3-hide-small" style="width:92px; margin-top:2px;">
-            <div class="w3-bar-item">
-                <span class="w3-large ">Hello <?php echo $rows['fname']." ". $rows['mname']." ". $rows['lname']; ?></span><br>
-                <div class="w3-margin-top"><span>Welcome to the E-Ration...</span></div>
-            </div>
-            </li>
-        </ul>
-        <h2 class="w3-center w3-margin-top">Payment History</h2>
-        <table class="table w3-margin-top">
+            <ul class="w3-ul w3-dark-blue w3-card-4 w3-round-large">
+                <li class="w3-bar">
+                    <img src="<?php echo "../uploads_images/" . $image; ?>" alt="Error"
+                        class="w3-bar-item w3-circle w3-hide-small" style="width:85px">
+                    <div class="w3-bar-item">
+                        <span class="w3-large">Hello
+                            <?php echo $name; ?>,</span><br>
+                        <span>Welcome to the E-Ration...</span>
+                    </div>
+                </li>
+            </ul>
+            <h2 class="w3-center w3-margin-top">Payment History</h2>
+            <table class="table w3-margin-top">
                 <thead>
-                  <tr>
-                    <th>SR No.</th>
-                    <th>Date</th>
-                    <th>Mode of Payment</th>
-                    <th>Amount</th>
-                    <th>Booking ID</th>
-                    <th>Reference ID</th>
-                    <th></th>
-                  </tr>
+                    <tr>
+                        <th>SR No.</th>
+                        <th>Date</th>
+                        <th>Mode of Payment</th>
+                        <th>Amount</th>
+                        <th>Booking ID</th>
+                        <th>Reference ID</th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td data-label="SR No.">1</td>
-                    <td data-label="Date">12/02/2022</td>
-                    <td data-label="Mode of Payment">UPI</td>
-                    <td data-label="Amount">213.65</td>
-                    <td data-label="Booking ID">8569325</td>
-                    <td data-label="Reference ID">13625342</td>
-                    <td data-label=""><a href="" class="btn">Recipt</a></td>
-                  </tr>
-                  <tr>
-                    <td data-label="SR No.">1</td>
-                    <td data-label="Date">12/02/2022</td>
-                    <td data-label="Mode of Payment">UPI</td>
-                    <td data-label="Amount">213.65</td>
-                    <td data-label="Booking ID">8569325</td>
-                    <td data-label="Reference ID">13625342</td>
-                    <td data-label=""><a href="" class="btn">Recipt</a></td>
-                  </tr>
-                  <tr>
-                    <td data-label="SR No.">1</td>
-                    <td data-label="Date">12/02/2022</td>
-                    <td data-label="Mode of Payment">UPI</td>
-                    <td data-label="Amount">213.65</td>
-                    <td data-label="Booking ID">8569325</td>
-                    <td data-label="Reference ID">13625342</td>
-                    <td data-label=""><a href="" class="btn">Recipt</a></td>
-                  </tr>
-                  <tr>
-                    <td data-label="SR No.">1</td>
-                    <td data-label="Date">12/02/2022</td>
-                    <td data-label="Mode of Payment">UPI</td>
-                    <td data-label="Amount">213.65</td>
-                    <td data-label="Booking ID">8569325</td>
-                    <td data-label="Reference ID">13625342</td>
-                    <td data-label=""><a href="" class="btn">Recipt</a></td>
-                  </tr>
-                  <tr>
-                    <td data-label="SR No.">1</td>
-                    <td data-label="Date">12/02/2022</td>
-                    <td data-label="Mode of Payment">UPI</td>
-                    <td data-label="Amount">213.65</td>
-                    <td data-label="Booking ID">8569325</td>
-                    <td data-label="Reference ID">13625342</td>
-                    <td data-label=""><a href="" class="btn">Recipt</a></td>
-                  </tr>
+                    <?php
+                $sql1="SELECT tbl_receipt.*, tbl_book.booking_id, tbl_payment.mode FROM tbl_receipt, tbl_book, tbl_payment 
+                WHERE tbl_book.rationcard_no='$rcard_no' AND tbl_book.booking_id=tbl_payment.booking_id 
+                AND tbl_receipt.u_name='$name'";
+                $result1=mysqli_query($conn,$sql1);
+                $trans=mysqli_fetch_all($result1,MYSQLI_ASSOC);
+                $cnt=mysqli_num_rows($result1);
+                $n=1;
+                if($cnt>=1)
+                {
+                    foreach($trans as $stat)
+                    {
+                    ?>
+                    <tr>
+                        <td data-label="SR No."><?php echo $n; ?></td>
+                        <td data-label="Date"><?php echo $stat['date']; ?></td>
+                        <td data-label="Mode of Payment"><?php echo $stat['mode']; ?></td>
+                        <td data-label="Amount"><?php echo $stat['amount']; ?></td>
+                        <td data-label="Booking ID"><?php echo $stat['booking_id']; ?></td>
+                        <td data-label="Reference ID"><?php echo $stat['tid']; ?></td>
+                        <td data-label=""><a href="receipt2.php?r_id=<?php echo $stat['receipt_id']; ?>"
+                                class="btn">Recipt</a></td>
+                    </tr>
+                    <?php
+                    }
+                }
+                else
+                {?>
+                    <tr>
+                        <td colspan="7" rowspan="3">No transcantions yet</td>
+                    </tr>
+                    <?php
+                }
+                ?>
                 </tbody>
-              </table>
+            </table>
         </div>
     </section>
 
     <script>
-        const body = document.querySelector('body'),
-      sidebar = body.querySelector('nav'),
-      toggle = body.querySelector(".toggle"),
-      searchBtn = body.querySelector(".search-box"),
-      modeSwitch = body.querySelector(".toggle-switch"),
-      modeText = body.querySelector(".mode-text");
+    const body = document.querySelector('body'),
+        sidebar = body.querySelector('nav'),
+        toggle = body.querySelector(".toggle"),
+        searchBtn = body.querySelector(".search-box"),
+        modeSwitch = body.querySelector(".toggle-switch"),
+        modeText = body.querySelector(".mode-text");
 
 
-toggle.addEventListener("click" , () =>{
-    sidebar.classList.toggle("close");
-})
+    toggle.addEventListener("click", () => {
+        sidebar.classList.toggle("close");
+    })
 
-searchBtn.addEventListener("click" , () =>{
-    sidebar.classList.remove("close");
-})
+    searchBtn.addEventListener("click", () => {
+        sidebar.classList.remove("close");
+    })
 
-modeSwitch.addEventListener("click" , () =>{
-    body.classList.toggle("dark");
-    
-    if(body.classList.contains("dark")){
-        modeText.innerText = "Light mode";
-    }else{
-        modeText.innerText = "Dark mode";
-        
-    }
-});
+    modeSwitch.addEventListener("click", () => {
+        body.classList.toggle("dark");
+
+        if (body.classList.contains("dark")) {
+            modeText.innerText = "Light mode";
+        } else {
+            modeText.innerText = "Dark mode";
+
+        }
+    });
     </script>
 
 </body>
+
 </html>
 <?php
 }

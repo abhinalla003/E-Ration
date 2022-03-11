@@ -29,6 +29,7 @@ if (isset($_POST['btn-login'])) {
     //checking customer is in database or not
     else if ($count > 0) {
         $_SESSION['rationcard_no'] = $post_rc_no;
+        $_SESSION['flag']="1";
         sleep(2);
         header("location: ../customer/customer.php");
     }
@@ -101,10 +102,11 @@ if (isset($_POST['btn-login'])) {
                                 <form action="" method="post">
                                     <label>Enter Username</label>
                                     <input type="text" class="w3-input w3-margin-top w3-margin-bottom"
-                                        name="adminusername" required>
+                                        name="adminusername" placeholder="Enter Username" required>
 
                                     <label>Enter Password</label>
-                                    <input type="password" class="w3-input w3-margin-top" name="adminpass" required>
+                                    <input type="password" class="w3-input w3-margin-top" name="adminpass"
+                                        placeholder="Enter Password" required>
 
                                     <button type="submit" class="btn btn-style mt-3 w3-theme-d3" name="btn-admin">Sign
                                         In </button>
@@ -130,12 +132,13 @@ if (isset($_POST['btn-login'])) {
                                 <form action="" method="post">
                                     <label>Enter PDS Number</label>
                                     <input type="number" class="w3-input w3-margin-top w3-margin-bottom" name="distpds"
-                                        required>
+                                        placeholder="Enter PDS No" required>
 
                                     <label>Enter Password</label>
-                                    <input type="password" class="w3-input w3-margin-top" name="distpass" required>
+                                    <input type="password" class="w3-input w3-margin-top" name="distpass" required
+                                        placeholder="Enter Password">
 
-                                    <a href="forgot_password.php"
+                                    <a href="forgot_password2.php"
                                         style="float: right;text-decoration: none;color: blue; font-weight: bold;"
                                         class="w3-margin-bottom">Forgot the password?</a>
                                     <button type="submit" class="btn btn-style mt-3 w3-theme-d3" name="btn-dist">Sign In
@@ -174,21 +177,22 @@ if (isset($_POST['btn-login'])) {
                                 <form action="" method="post">
                                     <label>Enter Rationcard Number</label>
                                     <input type="number" class="w3-input w3-margin-top w3-margin-bottom"
-                                        name="custusername" required maxlength="15">
+                                        name="custusername" placeholder="Enter Ration Card No" required maxlength="15">
 
                                     <label>Enter Password</label>
-                                    <input type="password" class="w3-input w3-margin-top" name="custpassword" required>
+                                    <input type="password" class="w3-input w3-margin-top" name="custpassword"
+                                        placeholder="Enter Password" required>
 
-                                    <a href="forgot_password.php"
+                                    <a href="forgot_password1.php"
                                         style="float: right;text-decoration: none;color: blue; font-weight: bold;"
                                         class="w3-margin-bottom">Forgot the password?</a>
                                     <button type="submit" class="btn btn-style mt-3 w3-theme-d3" name="btn-cust">Sign In
                                     </button>
                                     <p class="already">Don't have an account? <a href="signup.php">Register Now</a></p>
-
-                                </form>
                             </div>
-                            <?php
+                        </form>
+                    </div>
+                    <?php
                             if (isset($_REQUEST['btn-cust'])) {
                                 include 'connection.php';
                                 $post_rc_no = $_REQUEST['custusername'];
@@ -210,10 +214,10 @@ if (isset($_POST['btn-login'])) {
                                 }
                             }
                             ?>
-                        </form>
-                    </div>
+                    </form>
                 </div>
             </div>
+        </div>
         </div>
         <!-- //form -->
     </section>
