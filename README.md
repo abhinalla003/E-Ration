@@ -23,7 +23,7 @@ Using Incremental Model for E-Ration:
 - In an incremental model, the feedback of the client or the changes given by the client can be implemented in the next level.
 - Implementing the changes will not create problems in the incremental model.
 - The concept of E-Ration includes frequent changes in the inputs.
-- That�s why we had chosen the incremental model for the E-ration.
+- That's why we had chosen the incremental model for the E-ration.
 
 There are 3 users in the E-Ration:
 
@@ -42,7 +42,7 @@ There are 3 users in the E-Ration:
 - Can Pay Money for Ration:
   o User can pay money online or offline mode after booking the ration.
   o Can view members in ration card:
-  o User can view the member�s name and age of his/her ration card.
+  o User can view the member's name and age of his/her ration card.
 - Can post Complaint:
   o User can post a complaint against the PDS Shop.
 
