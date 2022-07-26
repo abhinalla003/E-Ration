@@ -119,9 +119,11 @@ For Admin:
 Username: admin,
 Password: admin
 
+
 For Customer 1:
 Username: 111111111111111,
 Password: Abhishek
+
 For Customer 2:
 Username: 777777777777777,
 Password: Dhruvpuri
