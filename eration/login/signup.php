@@ -33,7 +33,7 @@
         $post_gender=mysqli_real_escape_string($conn,$_POST['gender']);
         $post_dob=mysqli_real_escape_string($conn,$_POST['dob']);
         $post_ac_no=mysqli_real_escape_string($conn,$_POST['acard_no']);
-        $post_rc_no=mysqli_real_escape_string($conn,$_POST['rcard_no']);
+        $post_rc_no=$rcard;
         $post_city=mysqli_real_escape_string($conn,$_POST['city']);
         $post_state=mysqli_real_escape_string($conn,$_POST['state']);
         $post_pincode=mysqli_real_escape_string($conn,$_POST['pincode']);
@@ -70,10 +70,6 @@
                 $stock_quantity=1;
             }
             $final_price=$pre_price*$stock_quantity;
-
-            $sql3="INSERT INTO tbl_user_stock (u_id,stock_id,stock_name,stock_price,quantity)
-            VALUES ('$u_id', '$stock_id', '$stock_name', '$final_price', '$stock_quantity')";
-            mysqli_query($conn,$sql3);
             }
             sleep(2);
             echo '<script>
@@ -93,80 +89,7 @@
 }
 else
 {
-    if(isset($_POST['btn-signup']))
-        {
-        $filename = $_FILES["fileToUpload"]["name"];
-        $tempname = $_FILES["fileToUpload"]["tmp_name"];    
-        $folder = "../uploads_images/";
-            $post_password1=md5(mysqli_real_escape_string($conn,$_POST['password']));
-            $post_password2=md5(mysqli_real_escape_string($conn,$_POST['con_password']));
-            if($post_password1 == $post_password2)
-            {
-        $post_fname=mysqli_real_escape_string($conn,$_POST['fname']);
-        $post_mname=mysqli_real_escape_string($conn,$_POST['mname']);
-        $post_lname=mysqli_real_escape_string($conn,$_POST['lname']);
-        $post_add=mysqli_real_escape_string($conn,$_POST['address']);
-        $post_ph_no=mysqli_real_escape_string($conn,$_POST['phone_no']);
-        $post_gender=mysqli_real_escape_string($conn,$_POST['gender']);
-        $post_dob=mysqli_real_escape_string($conn,$_POST['dob']);
-        $post_ac_no=mysqli_real_escape_string($conn,$_POST['acard_no']);
-        $post_rc_no=mysqli_real_escape_string($conn,$_POST['rcard_no']);
-        $post_city=mysqli_real_escape_string($conn,$_POST['city']);
-        $post_state=mysqli_real_escape_string($conn,$_POST['state']);
-        $post_pincode=mysqli_real_escape_string($conn,$_POST['pincode']);
-        $post_email=mysqli_real_escape_string($conn,$_POST['email']);
-                $sql = "INSERT INTO tbl_user (fname, mname, lname, address, contact_no, gender, dob, aadhar_no, rationcard_no, city, state, pincode, email_id, image, password)
-                VALUES ('$post_fname', '$post_mname', '$post_lname', '$post_add', '$post_ph_no', '$post_gender', '$post_dob', '$post_ac_no', '$post_rc_no', '$post_city', '$post_state', '$post_pincode', '$post_email', '$filename', '$post_password1')";
-        }
-        else {
-            echo "<script>alert('Password and Confirm Password Must be Same')</script>";
-        }
-                if (mysqli_query($conn, $sql)) 
-        {
-            if (move_uploaded_file($tempname, $folder.$filename)) 
-        {
-            include 'connection.php';
-            $sql1="SELECT * FROM tbl_user WHERE rationcard_no='$post_rc_no'";
-            $result1=mysqli_query($conn,$sql1);
-            $rows=mysqli_fetch_assoc($result1);
-            $u_id=$rows['u_id'];
-            $sql2="SELECT * FROM tbl_stock";
-            $result2=mysqli_query($conn,$sql2);
-            $stocks=mysqli_fetch_all($result2,MYSQLI_ASSOC);
-            foreach($stocks as $stock)
-            {
-            $stock_id=$stock['stock_id'];
-            $stock_name=$stock['stock_name'];
-            $pre_price=$stock['stock_price'];
-            if($stock_name=="Wheat")
-            {
-                $stock_quantity=5;
-            }
-            else
-            {
-                $stock_quantity=1;
-            }
-            $final_price=$pre_price*$stock_quantity;
-
-            $sql3="INSERT INTO tbl_user_stock (u_id,stock_id,stock_name,stock_price,quantity)
-            VALUES ('$u_id', '$stock_id', '$stock_name', '$final_price', '$stock_quantity')";
-            mysqli_query($conn,$sql3);
-            }
-            sleep(2);
-            echo '<script>
-            alert("Registration Successfully");
-            window.location.href="../login/login.php";
-            </script>';
-        }
-        else {
-            echo "<script>alert('Something Went Wrong')</script>";
-        }
-            }
-        else {
-        echo "<script>alert('Something Went Wrong')</script>";
-        }
-        }
-
+    echo "<script>alert('Veify Ration csrd number....')</script>";
 }
 ?>
 <?php include 'config.php' ?>
@@ -234,16 +157,6 @@ else
                         <label>Rationcard No.</label>
                         <input class="w3-input w3-border w3-margin-top" name="rcard_no" type="text"
                             value="<?php echo $rcard; ?>" disabled>
-                    </div>
-                    <?php
-                    }
-                    else
-                    {
-                    ?>
-                    <div class="w3-third w3-margin-top">
-                        <label>Rationcard No.</label>
-                        <input class="w3-input w3-border w3-margin-top" name="rcard_no" type="number" maxlength="15"
-                            placeholder="Enter Rationcard No." required>
                     </div>
                     <?php
                     }
